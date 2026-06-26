@@ -12,9 +12,63 @@
     "main": {
       "type": "product",
       "settings": {}
+    },
+    "hello_world_Yzdw8q": {
+      "type": "hello-world",
+      "name": "Hello World Template",
+      "settings": {}
+    },
+    "17824877190d073304": {
+      "type": "_blocks",
+      "blocks": {
+        "ai_gen_block_9f299a0_mHUj6Y": {
+          "type": "ai_gen_block_9f299a0",
+          "settings": {
+            "title": "Compra más, ahorra más",
+            "text_alignment": "left",
+            "quantity_1_label": "1 unidad",
+            "quantity_2_label": "2 unidades",
+            "quantity_2_discount": 10,
+            "discount_text": "de descuento",
+            "show_badge": true,
+            "desktop_width_percent": 100,
+            "padding": 20,
+            "spacing": 16,
+            "border_radius": 8,
+            "border_width": 1,
+            "option_padding": 16,
+            "option_border_radius": 6,
+            "option_border_width": 2,
+            "background_color": "#f9f9f9",
+            "border_color": "#e0e0e0",
+            "text_color": "#333333",
+            "option_background": "#ffffff",
+            "option_border_color": "#d0d0d0",
+            "option_hover_background": "#f5f5f5",
+            "option_hover_border": "#000000",
+            "option_selected_background": "#f0f8ff",
+            "option_selected_border": "#000f9f",
+            "radio_color": "#000f9f",
+            "discount_color": "#008060",
+            "badge_background": "#008060",
+            "badge_text_color": "#ffffff",
+            "title_size": 20,
+            "quantity_size": 16,
+            "discount_size": 14,
+            "price_size": 18
+          },
+          "blocks": {}
+        }
+      },
+      "block_order": [
+        "ai_gen_block_9f299a0_mHUj6Y"
+      ],
+      "settings": {}
     }
   },
   "order": [
-    "main"
+    "main",
+    "hello_world_Yzdw8q",
+    "17824877190d073304"
   ]
 }
