@@ -1,6 +1,536 @@
+{% doc %}
+  @prompt
+    quiero que me crees una sextiosn de oferta de cantidad  para 1 y 2 unidades del porducto
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-quantity-offer-{{ ai_gen_id }} {
+    display: block;
+    width: {{ block.settings.desktop_width_percent }}%;
+    max-width: 100%;
+    padding: {{ block.settings.padding }}px;
+    background-color: {{ block.settings.background_color }};
+    border-radius: {{ block.settings.border_radius }}px;
+    border: {{ block.settings.border_width }}px solid {{ block.settings.border_color }};
+  }
+
+  .ai-quantity-offer__title-{{ ai_gen_id }} {
+    margin: 0 0 {{ block.settings.spacing }}px;
+    font-size: {{ block.settings.title_size }}px;
+    color: {{ block.settings.text_color }};
+    text-align: {{ block.settings.text_alignment }};
+  }
+
+  .ai-quantity-offer__options-{{ ai_gen_id }} {
+    display: flex;
+    flex-direction: column;
+    gap: {{ block.settings.spacing }}px;
+  }
+
+  .ai-quantity-offer__option-{{ ai_gen_id }} {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: {{ block.settings.option_padding }}px;
+    background-color: {{ block.settings.option_background }};
+    border: {{ block.settings.option_border_width }}px solid {{ block.settings.option_border_color }};
+    border-radius: {{ block.settings.option_border_radius }}px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .ai-quantity-offer__option-{{ ai_gen_id }}:hover {
+    background-color: {{ block.settings.option_hover_background }};
+    border-color: {{ block.settings.option_hover_border }};
+  }
+
+  .ai-quantity-offer__option-{{ ai_gen_id }}.selected {
+    background-color: {{ block.settings.option_selected_background }};
+    border-color: {{ block.settings.option_selected_border }};
+  }
+
+  .ai-quantity-offer__option-left-{{ ai_gen_id }} {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .ai-quantity-offer__radio-{{ ai_gen_id }} {
+    width: 20px;
+    height: 20px;
+    border: 2px solid {{ block.settings.radio_color }};
+    border-radius: 50%;
+    position: relative;
+    flex-shrink: 0;
+  }
+
+  .ai-quantity-offer__option-{{ ai_gen_id }}.selected .ai-quantity-offer__radio-{{ ai_gen_id }}::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 10px;
+    height: 10px;
+    background-color: {{ block.settings.radio_color }};
+    border-radius: 50%;
+  }
+
+  .ai-quantity-offer__option-info-{{ ai_gen_id }} {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .ai-quantity-offer__quantity-{{ ai_gen_id }} {
+    font-size: {{ block.settings.quantity_size }}px;
+    font-weight: 600;
+    color: {{ block.settings.text_color }};
+  }
+
+  .ai-quantity-offer__discount-{{ ai_gen_id }} {
+    font-size: {{ block.settings.discount_size }}px;
+    color: {{ block.settings.discount_color }};
+  }
+
+  .ai-quantity-offer__price-{{ ai_gen_id }} {
+    font-size: {{ block.settings.price_size }}px;
+    font-weight: 600;
+    color: {{ block.settings.text_color }};
+    flex-shrink: 0;
+  }
+
+  .ai-quantity-offer__badge-{{ ai_gen_id }} {
+    display: inline-block;
+    padding: 4px 8px;
+    background-color: {{ block.settings.badge_background }};
+    color: {{ block.settings.badge_text_color }};
+    font-size: 12px;
+    border-radius: 4px;
+    font-weight: 600;
+  }
+
+  @media screen and (max-width: 749px) {
+    .ai-quantity-offer__option-{{ ai_gen_id }} {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .ai-quantity-offer__price-{{ ai_gen_id }} {
+      align-self: flex-end;
+    }
+  }
+{% endstyle %}
+
+<quantity-offer-{{ ai_gen_id }}
+  class="ai-quantity-offer-{{ ai_gen_id }}"
+  {{ block.shopify_attributes }}
+  data-product-id="{{ product.id }}"
+>
+  {% if block.settings.title != blank %}
+    <h3 class="ai-quantity-offer__title-{{ ai_gen_id }}">{{ block.settings.title }}</h3>
+  {% endif %}
+
+  <div class="ai-quantity-offer__options-{{ ai_gen_id }}">
+    <div
+      class="ai-quantity-offer__option-{{ ai_gen_id }} selected"
+      data-quantity="1"
+      data-discount="0"
+    >
+      <div class="ai-quantity-offer__option-left-{{ ai_gen_id }}">
+        <div class="ai-quantity-offer__radio-{{ ai_gen_id }}"></div>
+        <div class="ai-quantity-offer__option-info-{{ ai_gen_id }}">
+          <div class="ai-quantity-offer__quantity-{{ ai_gen_id }}">
+            {{ block.settings.quantity_1_label }}
+          </div>
+        </div>
+      </div>
+      <div class="ai-quantity-offer__price-{{ ai_gen_id }}">
+        {{ product.price | money }}
+      </div>
+    </div>
+
+    <div
+      class="ai-quantity-offer__option-{{ ai_gen_id }}"
+      data-quantity="2"
+      data-discount="{{ block.settings.quantity_2_discount }}"
+    >
+      <div class="ai-quantity-offer__option-left-{{ ai_gen_id }}">
+        <div class="ai-quantity-offer__radio-{{ ai_gen_id }}"></div>
+        <div class="ai-quantity-offer__option-info-{{ ai_gen_id }}">
+          <div class="ai-quantity-offer__quantity-{{ ai_gen_id }}">
+            {{ block.settings.quantity_2_label }}
+          </div>
+          {% if block.settings.quantity_2_discount > 0 %}
+            <div class="ai-quantity-offer__discount-{{ ai_gen_id }}">
+              {% if block.settings.show_badge %}
+                <span class="ai-quantity-offer__badge-{{ ai_gen_id }}">
+                  {{ block.settings.quantity_2_discount }}% {{ block.settings.discount_text }}
+                </span>
+              {% else %}
+                {{ block.settings.quantity_2_discount }}% {{ block.settings.discount_text }}
+              {% endif %}
+            </div>
+          {% endif %}
+        </div>
+      </div>
+      <div class="ai-quantity-offer__price-{{ ai_gen_id }}" data-original-price="{{ product.price | times: 2 }}">
+        {% assign discounted_price = product.price | times: 2 | times: 100 | minus: block.settings.quantity_2_discount | times: product.price | times: 2 | divided_by: 100 %}
+        {% if block.settings.quantity_2_discount > 0 %}
+          {% assign discount_multiplier = 100 | minus: block.settings.quantity_2_discount %}
+          {% assign total_price = product.price | times: 2 %}
+          {% assign final_price = total_price | times: discount_multiplier | divided_by: 100 %}
+          {{ final_price | money }}
+        {% else %}
+          {{ product.price | times: 2 | money }}
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</quantity-offer-{{ ai_gen_id }}>
+
+<script>
+  (function() {
+    class QuantityOffer{{ ai_gen_id }} extends HTMLElement {
+      constructor() {
+        super();
+        this.options = this.querySelectorAll('.ai-quantity-offer__option-{{ ai_gen_id }}');
+        this.productId = this.dataset.productId;
+      }
+
+      connectedCallback() {
+        this.setupEventListeners();
+      }
+
+      setupEventListeners() {
+        this.options.forEach((option) => {
+          option.addEventListener('click', () => {
+            this.selectOption(option);
+          });
+        });
+      }
+
+      selectOption(selectedOption) {
+        this.options.forEach((option) => {
+          option.classList.remove('selected');
+        });
+        selectedOption.classList.add('selected');
+
+        const quantity = parseInt(selectedOption.dataset.quantity);
+        this.updateQuantityInput(quantity);
+      }
+
+      updateQuantityInput(quantity) {
+        const quantityInput = document.querySelector('input[name="quantity"]');
+        if (quantityInput) {
+          quantityInput.value = quantity;
+          quantityInput.dispatchEvent(new Event('change', { bubbles: true }));
+        }
+      }
+    }
+
+    customElements.define('quantity-offer-{{ ai_gen_id }}', QuantityOffer{{ ai_gen_id }});
+  })();
+</script>
+
 {% schema %}
- {
-   "name": "AI_Block",
-   "tag": "shopify-ai-generated-block"
- }
+{
+  "name": "Oferta por cantidad",
+  "tag": null,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Contenido"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "title",
+      "label": "Título",
+      "default": "Compra más, ahorra más"
+    },
+    {
+      "type": "select",
+      "id": "text_alignment",
+      "label": "Alineación del título",
+      "options": [
+        {
+          "value": "left",
+          "label": "Izquierda"
+        },
+        {
+          "value": "center",
+          "label": "Centro"
+        },
+        {
+          "value": "right",
+          "label": "Derecha"
+        }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "header",
+      "content": "Cantidad 1"
+    },
+    {
+      "type": "text",
+      "id": "quantity_1_label",
+      "label": "Etiqueta",
+      "default": "1 unidad"
+    },
+    {
+      "type": "header",
+      "content": "Cantidad 2"
+    },
+    {
+      "type": "text",
+      "id": "quantity_2_label",
+      "label": "Etiqueta",
+      "default": "2 unidades"
+    },
+    {
+      "type": "range",
+      "id": "quantity_2_discount",
+      "label": "Descuento",
+      "min": 0,
+      "max": 50,
+      "step": 5,
+      "unit": "%",
+      "default": 10
+    },
+    {
+      "type": "text",
+      "id": "discount_text",
+      "label": "Texto de descuento",
+      "default": "de descuento"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_badge",
+      "label": "Mostrar descuento como insignia",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Diseño"
+    },
+    {
+      "type": "range",
+      "id": "desktop_width_percent",
+      "label": "Ancho en escritorio",
+      "min": 50,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "default": 100
+    },
+    {
+      "type": "range",
+      "id": "padding",
+      "label": "Relleno",
+      "min": 0,
+      "max": 40,
+      "step": 4,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "spacing",
+      "label": "Espaciado",
+      "min": 8,
+      "max": 32,
+      "step": 4,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "border_radius",
+      "label": "Radio del borde",
+      "min": 0,
+      "max": 20,
+      "step": 2,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "border_width",
+      "label": "Ancho del borde",
+      "min": 0,
+      "max": 4,
+      "step": 1,
+      "unit": "px",
+      "default": 1
+    },
+    {
+      "type": "header",
+      "content": "Opciones"
+    },
+    {
+      "type": "range",
+      "id": "option_padding",
+      "label": "Relleno de opción",
+      "min": 8,
+      "max": 32,
+      "step": 4,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "option_border_radius",
+      "label": "Radio del borde",
+      "min": 0,
+      "max": 16,
+      "step": 2,
+      "unit": "px",
+      "default": 6
+    },
+    {
+      "type": "range",
+      "id": "option_border_width",
+      "label": "Ancho del borde",
+      "min": 1,
+      "max": 4,
+      "step": 1,
+      "unit": "px",
+      "default": 2
+    },
+    {
+      "type": "header",
+      "content": "Colores"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Fondo",
+      "default": "#f9f9f9"
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Borde",
+      "default": "#e0e0e0"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Texto",
+      "default": "#333333"
+    },
+    {
+      "type": "color",
+      "id": "option_background",
+      "label": "Fondo de opción",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "option_border_color",
+      "label": "Borde de opción",
+      "default": "#d0d0d0"
+    },
+    {
+      "type": "color",
+      "id": "option_hover_background",
+      "label": "Fondo al pasar",
+      "default": "#f5f5f5"
+    },
+    {
+      "type": "color",
+      "id": "option_hover_border",
+      "label": "Borde al pasar",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "option_selected_background",
+      "label": "Fondo seleccionado",
+      "default": "#f0f8ff"
+    },
+    {
+      "type": "color",
+      "id": "option_selected_border",
+      "label": "Borde seleccionado",
+      "default": "#000f9f"
+    },
+    {
+      "type": "color",
+      "id": "radio_color",
+      "label": "Color del radio",
+      "default": "#000f9f"
+    },
+    {
+      "type": "color",
+      "id": "discount_color",
+      "label": "Color del descuento",
+      "default": "#008060"
+    },
+    {
+      "type": "color",
+      "id": "badge_background",
+      "label": "Fondo de insignia",
+      "default": "#008060"
+    },
+    {
+      "type": "color",
+      "id": "badge_text_color",
+      "label": "Texto de insignia",
+      "default": "#ffffff"
+    },
+    {
+      "type": "header",
+      "content": "Tipografía"
+    },
+    {
+      "type": "range",
+      "id": "title_size",
+      "label": "Tamaño del título",
+      "min": 14,
+      "max": 32,
+      "step": 2,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "quantity_size",
+      "label": "Tamaño de cantidad",
+      "min": 12,
+      "max": 24,
+      "step": 2,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "discount_size",
+      "label": "Tamaño de descuento",
+      "min": 10,
+      "max": 18,
+      "step": 2,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "price_size",
+      "label": "Tamaño de precio",
+      "min": 14,
+      "max": 28,
+      "step": 2,
+      "unit": "px",
+      "default": 18
+    }
+  ],
+  "presets": [
+    {
+      "name": "Oferta por cantidad"
+    }
+  ]
+}
 {% endschema %}
